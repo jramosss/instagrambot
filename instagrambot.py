@@ -75,7 +75,7 @@ class InstagramBot:
     def scroll_and_like(self):
         self.driver.get(self.URL)
         sleep(1)
-        for _ in range (5000):
+        for _ in range (50):
             likes = self.driver.find_elements(By.CLASS_NAME,"fr66n")
             for like in likes:
                 if like.get_attribute('height') != 16:
@@ -83,6 +83,16 @@ class InstagramBot:
 
             for _ in range (50):
                 webdriver.ActionChains(self.driver).key_down(Keys.ARROW_DOWN).perform()
+    
+
+    def autoscroll (self,time):
+        self.driver.get(self.URL)
+        sleep(0.5)
+        for i in range (time):
+            if (i % 10 == 0):
+                sleep(1)
+            webdriver.ActionChains(self.driver).key_down(Keys.ARROW_DOWN).perform()
+        
 
 
 bot = InstagramBot()
@@ -104,4 +114,6 @@ sleep(0.5)
 
 #bot.comment_fst_ph('Dragon blanco de ojos azules',"https://www.instagram.com/joaco_torres1/")
 
-bot.scroll_and_like()
+#bot.scroll_and_like()
+
+bot.autoscroll(500)
