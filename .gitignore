@@ -1,0 +1,9 @@
+credentials.py
+bin/
+chromedriver/
+include/
+lib/
+lib64
+share/
+pyvenv.cfg
+__pycache__/
