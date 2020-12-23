@@ -25,7 +25,6 @@ class InstagramBot:
         uname_btn = self.driver.find_element_by_xpath('//*[@id="loginForm"]/div/div[1]/div/label/input')
         uname_btn.send_keys(username)
         pwd_btn = self.driver.find_element_by_xpath('//*[@id="loginForm"]/div/div[2]/div/label/input')
-        pwd_btn.click()
         pwd_btn.send_keys(password)
         login_btn2 = self.driver.find_element_by_xpath('//*[@id="loginForm"]/div/div[3]/button')
         login_btn2.click()
@@ -43,23 +42,7 @@ class InstagramBot:
         except:
             pass
     
-
-    def go_to_profile(self):
-        self.driver.get(self.INSTAGRAM_ROOT_PAGE)
-        sleep(self.ROOT_PAGE_WAIT)
-        self.driver.find_element_by_xpath('//*[@id="f481cd16025e5"]/div/div/div').click()
-
-
-    def go_to_someones_profile (self,who):
-        self.driver.get(self.INSTAGRAM_ROOT_PAGE + who)
-        sleep(self.ROOT_PAGE_WAIT)
-        wait = WebDriverWait(self.driver,2)
-        search = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/nav/div[2]/div/div/div[2]/input')
-        search.send_keys(who)
-        res = wait.until(presence_of_element_located((By.CLASS_NAME,"Fy4o8")))
-        res.click()
     
-
     def get_fst_photo (self,who):
         self.driver.get(self.INSTAGRAM_ROOT_PAGE + who)
         sleep(self.ROOT_PAGE_WAIT)
@@ -80,15 +63,16 @@ class InstagramBot:
             self.driver.get(url)
             sleep(1)
             post.click()
-        sleep(0.7)
+
+        sleep(self.ROOT_PAGE_WAIT)
+
+        #comment area
         comment_area = self.driver.find_element_by_class_name('Ypffh')
         comment_area.click()
         comment_area = self.driver.find_element_by_class_name('Ypffh')
         comment_area.send_keys(message)
         comment_area = self.driver.find_element_by_class_name('Ypffh')
-        publish_btn = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/article/div[3]/section[3]/div/form/button')
-        #comment_area.send_keys(Keys.ENTER)
-        publish_btn.click()
+        comment_area.send_keys(Keys.ENTER)
 
 
     def autocomment (self,shortlist,n,url,post,filename=None):
@@ -110,6 +94,7 @@ class InstagramBot:
                 continue
             
 
+    #TODO
     def scroll_and_like(self):
         self.driver.get(self.INSTAGRAM_ROOT_PAGE)
         sleep(self.ROOT_PAGE_WAIT)
@@ -188,7 +173,7 @@ sleep(0.5)
 
 #sleep(1)
 
-#bot.comment('xd',bot.INSTAGRAM_ROOT_PAGE+'echeketere',bot.get_fst_photo('echeketere'),True)
+bot.comment('xd',bot.INSTAGRAM_ROOT_PAGE+'echeketere',bot.get_fst_photo('echeketere'),True)
 
 #bot.scroll_and_like()
 
@@ -196,7 +181,7 @@ sleep(0.5)
 
 #bot.get_followers('juliramoss1')
 
-bot.autocomment(3,10,'',bot.get_fst_photo('echeketere'))
+#bot.autocomment(3,10,'',bot.get_fst_photo('echeketere'))
 
 sleep(2)
 bot.clean()
