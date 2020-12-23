@@ -7,3 +7,6 @@ lib64
 share/
 pyvenv.cfg
 __pycache__/
+example_users.py
+juliramoss1_followers.py
+write.py

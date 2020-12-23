@@ -97,13 +97,18 @@ class InstagramBot:
         self.driver.get(post)
         message = ""
         user = 0
-        for i in range (n):
+        for _ in range (n):
             message = ""
             for j in range (shortlist):
                 message += '@' + followers[user+j] + ' '
             user += 3
-            self.comment(message,url,post,True)
-            sleep(2)
+            try:
+                self.comment(message,url,post,True)
+                #3 bc otherwise instagram blocks u
+                sleep(3)
+            except:
+                continue
+            
 
     def scroll_and_like(self):
         self.driver.get(self.INSTAGRAM_ROOT_PAGE)
@@ -191,7 +196,7 @@ sleep(0.5)
 
 #bot.get_followers('juliramoss1')
 
-bot.autocomment(3,3,'',bot.get_fst_photo('echeketere'))
+bot.autocomment(3,10,'',bot.get_fst_photo('echeketere'))
 
 sleep(2)
 bot.clean()
