@@ -1,13 +1,13 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support.expected_conditions import presence_of_element_located
 from time import sleep
 from credentials import username,password
 #from juliramoss1_followers import followers
 from example_users import followers
 from filewrite import write_to_file
+#from dontsleep import *
+import time
 
 class InstagramBot:
     INSTAGRAM_ROOT_PAGE = 'https://www.instagram.com/'
@@ -94,27 +94,32 @@ class InstagramBot:
                 continue
             
 
-    #TODO
-    def scroll_and_like(self):
+    #TODO after 10 times aprox stops liking, just scrolls
+    def scroll_and_like(self,wh):
         self.driver.get(self.INSTAGRAM_ROOT_PAGE)
         sleep(self.ROOT_PAGE_WAIT)
-        for _ in range (50):
-            likes = self.driver.find_elements(By.CLASS_NAME,"fr66n")
-            for like in likes:
-                if like.get_attribute('height') != 16:
-                    like.click()
-
-            for _ in range (50):
-                webdriver.ActionChains(self.driver).key_down(Keys.ARROW_DOWN).perform()
+        action_chain = webdriver.ActionChains(self.driver)
+        liked = []
+        for _ in range (wh):
+            try:
+                for like in self.driver.find_elements(By.CLASS_NAME,"fr66n"):
+                    if (like.get_attribute('height') != 16 and like not in liked
+                        and like.get_attribute('type') != 'button'):
+                        like.click()
+                        liked.append(like)
+                action_chain.key_down(Keys.ARROW_DOWN).perform()
+            except:
+                action_chain.key_down(Keys.ARROW_DOWN).perform()
     
 
     def autoscroll (self,time):
         self.driver.get(self.INSTAGRAM_ROOT_PAGE)
         sleep(self.ROOT_PAGE_WAIT)
+        actions = webdriver.ActionChains(self.driver)
         for i in range (time):
             if (i % 10 == 0):
                 sleep(3)
-            webdriver.ActionChains(self.driver).key_down(Keys.ARROW_DOWN).perform()
+            actions.key_down(Keys.ARROW_DOWN).perform()
                 
             
     def username_cleanse (self,uname):
@@ -123,11 +128,20 @@ class InstagramBot:
         return uname
 
 
-    def get_followers (self,who):
+    def get_followers (self,who,dontsleep=True):
         self.driver.get(self.INSTAGRAM_ROOT_PAGE + who)
         sleep(self.ROOT_PAGE_WAIT)
+        #if dontsleep:
+         #   dont()
         n_of_followers = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/header/section/ul/li[2]/a/span')
-        N_OF_FOLLOWERS = int(n_of_followers.get_attribute('title'))
+        try:
+            N_OF_FOLLOWERS = int(n_of_followers.get_attribute('title'))
+        #If the profile has > 1000 followers, the number becomes '1,xxx', and
+        #this is not a float for python
+        except ValueError:
+            N_OF_FOLLOWERS = int(n_of_followers.get_attribute('title').replace(',',''))
+
+        print(N_OF_FOLLOWERS)
         followers_btn = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/header/section/ul/li[2]/a')
         followers_btn.click()
         sleep(1)
@@ -138,7 +152,12 @@ class InstagramBot:
         followers = []
         slider = self.driver.find_element_by_class_name('isgrP')
         exceptions = 0
-        while(len(followers) != N_OF_FOLLOWERS and exceptions < 50):
+        i = 0
+        #                       This is because this tool is imprecise so 
+        #                       it would never end
+        while(len(followers) <= N_OF_FOLLOWERS-5 and i < N_OF_FOLLOWERS/2):
+            i += 1
+            print(len(followers))
             try:
                 for user in followersList.find_elements_by_css_selector('li'):
                     userLink = user.find_element_by_css_selector('a').get_attribute('href')
@@ -152,9 +171,10 @@ class InstagramBot:
     
             except:
                 exceptions += 1
-                print("Lol")
                 actionChain.key_down(Keys.SPACE).key_up(Keys.SPACE).perform()
-                continue
+
+        #if dontsleep:
+         #   do()
 
         return followers
 
@@ -163,25 +183,30 @@ class InstagramBot:
         self.driver.close()
 
 
-bot = InstagramBot()
 
-bot.login()
+def main ():
+    bot = InstagramBot()
 
-sleep(0.5)
+    bot.login()
 
-#bot.go_to_profile()
+    #bot.comment('xd',bot.INSTAGRAM_ROOT_PAGE+'echeketere',bot.get_fst_photo('echeketere'),True)
 
-#sleep(1)
+    #bot.scroll_and_like(50)
 
-bot.comment('xd',bot.INSTAGRAM_ROOT_PAGE+'echeketere',bot.get_fst_photo('echeketere'),True)
+    #bot.autoscroll(500)
 
-#bot.scroll_and_like()
+    start = time.time()
+    uname = 'facu_percerra'
+    res = bot.get_followers(uname)
+    end = time.time()
+    write_to_file(res,username=uname)
+    print(f"Got {len(res)} followers in {end-start} seconds")
 
-#bot.autoscroll(500)
+    #bot.autocomment(3,10,'',bot.get_fst_photo('echeketere'))
 
-#bot.get_followers('juliramoss1')
+    sleep(2)
+    bot.clean()
 
-#bot.autocomment(3,10,'',bot.get_fst_photo('echeketere'))
 
-sleep(2)
-bot.clean()
+if __name__ == '__main__':
+    main()
