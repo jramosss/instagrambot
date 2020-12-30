@@ -12,9 +12,10 @@ import time
 class InstagramBot:
     INSTAGRAM_ROOT_PAGE = 'https://www.instagram.com/'
     ROOT_PAGE_WAIT = 0.7
+    CHROMEDRIVER_ROOT = 'chromedriver/chromedriver'
 
     def __init__(self) -> None:
-        self.driver = webdriver.Chrome('chromedriver/chromedriver')
+        self.driver = webdriver.Chrome(CHROMEDRIVER_ROOT)
 
     
     def login (self):
